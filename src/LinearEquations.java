@@ -11,10 +11,16 @@ import java.util.Stack;
 public class LinearEquations {
     public static void main(String[] args) {
 
+        double[][] matrix = {{3, -13, 9, 3, -19},
+                            {-6, 4, 1, -18, -34},
+                            {6, -2, 2, 4, 16},
+                            {12, -8, 6, 10, 26}};
+        /**
+
         double[][] matrix = {{2, 3, 0, 8},
                             {-1, 2, -1, 0},
                             {3, 0, 2, 9}};
-
+        **/
         Stack<Integer> rowsDone = new Stack<>();
         ArrayList<Double> valuesOfX = new ArrayList<>();
 
@@ -34,18 +40,8 @@ public class LinearEquations {
         }
         System.out.println();
         for (int i = 0; i < matrix.length; i++) {
-            System.out.printf("x%d = %.2f\n", i+1, valuesOfX.get(i));
+            System.out.printf("x%d = %.2f\n", i+1, valuesOfX.get(matrix.length-(i+1)));
         }
-
-        /*
-        double[] highestInRow = getHighestInRow(matrix, rowsDone);
-        double multiplier = getMultiplier(0,0, matrix, getPivotRow(0, matrix, rowsDone, highestInRow));
-        System.out.println(rowsDone);
-        getPivotRow(1, matrix, rowsDone, highestInRow);
-        System.out.println(rowsDone);
-        getPivotRow(2, matrix, rowsDone, highestInRow);
-        System.out.println(rowsDone);
-        */
     }
 
     /**

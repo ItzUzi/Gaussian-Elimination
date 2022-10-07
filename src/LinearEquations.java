@@ -1,6 +1,8 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 import java.util.Stack;
 
@@ -19,16 +21,9 @@ public class LinearEquations {
         else
             matrix = txtInput();
 
-        /*/
-        matrix = new double[][]{{3, -13, 9, 3, -19},
-                {-6, 4, 1, -18, -34},
-                {6, -2, 2, 4, 16},
-                {12, -8, 6, 10, 26}};
-        /*
-        double[][] matrix = {{2, 3, 0, 8},
-                            {-1, 2, -1, 0},
-                            {3, 0, 2, 9}};
-        */
+        if (matrix.length < 1)
+            System.exit(0);
+
         Stack<Integer> rowsDone = new Stack<>();
         ArrayList<Double> valuesOfX = new ArrayList<>(matrix.length);
 
@@ -43,13 +38,12 @@ public class LinearEquations {
             multiplierOps(column, matrix, rowsDone, highest);
         }
 
-        for (int column = matrix[0].length-2; column >= 0; column--) {
+        for (int column = matrix[0].length-2; column >= 0; column--)
             xSolver(column, matrix, rowsDone, valuesOfX);
-        }
+
         System.out.println();
-        for (int i = 0; i < matrix.length; i++) {
+        for (int i = 0; i < matrix.length; i++)
             System.out.printf("x%d = %5.2f\n", i + 1, valuesOfX.get(matrix.length - (i + 1)));
-        }
     }
 
     /**
@@ -94,7 +88,6 @@ public class LinearEquations {
      * @return double[] of all highest values per row
      */
     public static double[] getHighestInRow(double[][] matrix) {
-
         double[] highestInRow = new double[matrix.length];
         for (int row = 0; row < matrix.length; row++) {
             double temp = 0;
@@ -105,7 +98,6 @@ public class LinearEquations {
             }
             highestInRow[row] = temp;
         }
-
         return highestInRow;
     }
 
@@ -124,19 +116,16 @@ public class LinearEquations {
         valuesOfX.add(matrix[row][matrix[row].length-1]);
     }
 
-    public static void multiplierOps(int columnStart, double[][] matrix, Stack<Integer> rowsDone, double[] highestPerRow) {
-
+    public static void multiplierOps(int columnStart, double[][] matrix, Stack<Integer> rowsDone,
+                                     double[] highestPerRow) {
         int pivotRow = getPivotRow(columnStart, matrix, rowsDone, highestPerRow);
         for (int row = 0; row < matrix.length; row++) {
             if (rowsDone.contains(row))
                 continue;
-
             double multiplier = getMultiplier(columnStart, row, matrix, pivotRow);
-            for (int column = columnStart;column < matrix[row].length; column++) {
+            for (int column = columnStart;column < matrix[row].length; column++)
                 matrix[row][column] -= matrix[pivotRow][column] * multiplier;
-            }
         }
-
         for(double[] dd : matrix) {
             for (double d : dd)
                 System.out.printf("%10.2f ", d);
@@ -156,7 +145,6 @@ public class LinearEquations {
                 break;
             System.out.println("Invalid input");
         }
-
         return c == '1';
     }
 
@@ -170,7 +158,7 @@ public class LinearEquations {
                 throw new NumberFormatException();
         } catch (NumberFormatException e) {
             System.out.println("Invalid input");
-            return usrInput();
+            return new double[0][0];
         }
         double[][] matrix = new double[n][n+1];
         for (int y = 0; y < matrix.length; y++) {
@@ -186,7 +174,10 @@ public class LinearEquations {
                     }
                 } catch (NumberFormatException e) {
                     System.out.println("Invalid Format");
-                    return usrInput();
+                    return new double[0][0];
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    System.out.println("Not enough entries");
+                    return new double[0][0];
                 }
         }
         return matrix;
@@ -202,9 +193,32 @@ public class LinearEquations {
             fileReader = new Scanner(file);
         } catch (FileNotFoundException e) {
             System.out.println("Invalid file name");
-            return txtInput();
+            return new double[0][0];
         }
+        if (!fileReader.hasNextLine())
+            return new double[0][0];
 
-        return  new double[10][11];
+        String[] entries = fileReader.nextLine().split(" ");
+        int columns = entries.length;
+        int maxRows = columns-1;
+        double[][] matrix = new double[maxRows][columns];
+        int row = 0;
+        for (int column = 0; column < matrix[row].length; column++) {
+            matrix[row][column] = Double.parseDouble(entries[column]);
+        }
+        row ++;
+
+        while (fileReader.hasNextLine()){
+            entries = fileReader.nextLine().split(" ");
+            try {
+                for (int column = 0; column < matrix[row].length; column++)
+                    matrix[row][column] = Double.parseDouble(entries[column]);
+                row++;
+            } catch (ArrayIndexOutOfBoundsException e) {
+                System.out.println("Invalid matrix format");
+                return new double[0][0];
+            }
+        }
+        return matrix;
     }
 }

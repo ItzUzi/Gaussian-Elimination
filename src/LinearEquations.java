@@ -1,10 +1,7 @@
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Scanner;
-import java.util.Stack;
+import java.util.*;
 
 /**
  * Asks user for num of linear equations; n <= 10;
@@ -27,9 +24,13 @@ public class LinearEquations {
         Stack<Integer> rowsDone = new Stack<>();
         ArrayList<Double> valuesOfX = new ArrayList<>(matrix.length);
 
-        for (double[] y: matrix) {
-            for (double x: y)
-                System.out.printf("%10.2f ", x);
+        for (double[] row : matrix) {
+            for (int column = 0; column < row.length; column++) {
+                if (column == row.length - 1)
+                    System.out.printf("| %-10.2f ", row[column]);
+                else
+                    System.out.printf("%-10.2f ", row[column]);
+            }
             System.out.println();
         }
         double[] highest = getHighestInRow(matrix);
@@ -56,16 +57,25 @@ public class LinearEquations {
     public static int getPivotRow(int column, double[][] matrix, Stack<Integer> rowsDone, double[] highestInRow) {
         double temp = 0;
         int index = 0;
+        double[] scaledRatios = new double[matrix.length];
 
         for (int row = 0; row < matrix.length; row++) {
             if (rowsDone.contains(row)) continue;
-
-            if (Math.abs(temp) < Math.abs(matrix[row][column] / Math.abs(highestInRow[row]))) {
+            double ratio = Math.abs(matrix[row][column] / Math.abs(highestInRow[row]));
+            scaledRatios[row] = ratio;
+            if (Math.abs(temp) < ratio) {
                 temp = (matrix[row][column] / highestInRow[row]);
                 index = row;
             }
         }
         rowsDone.add(index);
+
+        System.out.print("Scaled Ratio List:\n[ ");
+        for (double d: scaledRatios)
+            System.out.printf("%2.2f ", d);
+        System.out.print("]\n");
+
+        System.out.printf("Pivot Row is: row %d\n", rowsDone.peek()+1);
 
         return index;
     }
@@ -126,9 +136,13 @@ public class LinearEquations {
             for (int column = columnStart;column < matrix[row].length; column++)
                 matrix[row][column] -= matrix[pivotRow][column] * multiplier;
         }
-        for(double[] dd : matrix) {
-            for (double d : dd)
-                System.out.printf("%10.2f ", d);
+        for(double[] row : matrix) {
+            for (int column = 0; column < row.length; column++){
+                if (column == row.length-1)
+                    System.out.printf("| %-10.2f ", row[column]);
+                else
+                    System.out.printf("%-10.2f ", row[column]);
+            }
             System.out.println();
         }
     }
